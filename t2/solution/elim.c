@@ -7,77 +7,88 @@
 //Esta función elimina del string str todas las apariciones del patrón pat
 void eliminar(char *str, char *pat){
     int pat_len = strlen(pat); 
-    char *aux = str, *back = str + pat_len, backup; //se guarda una copia del puntero al string y otro a strlen(pat) espacios mas
+    char *aux = str; //se guarda una copia del puntero al string y otro a strlen(pat) espacios mas
 
-    while(strlen(aux) >= strlen(pat)){// mientras aun quepa el patron en lo que resta del string
-        backup = *back; // se guarda el caracter que exece el largo de pat
-        *back = 0; // se reemplaza por cero para marcar el final de un str y poder aplicar strcmp
+    if(pat_len){ //si el patron es de largo 0 no hay nada que hacer
+        
+        while(strlen(aux) >= strlen(pat)){// mientras aun quepa el patron en lo que resta del string
 
-        if(strcmp(aux,pat) == 0){ // se compara un trozo del string con el patron que se quiere eliminar
-            *back = backup; // se devuelve el caracter guardado
-            char *copy = back + pat_len - 1, *paste = aux; //puntero para copiar los caracteres luego del patron y moverlos
-            
-            while(*copy){
-                *paste = *copy;
-                copy++;
-                paste++;
+            if(strncmp(aux, pat, pat_len) == 0){ // se compara un trozo del string con el patron que se quiere eliminar
+                char *copy = aux + pat_len, *paste = aux; //punteros para copiar los caracteres luego del patron y moverlos
+                
+                while(*copy){ //mientras queden caracteres que reubicar
+                    *paste = *copy; //se mueve el caracter para atras
+                    copy++; // se avanza al sigte caracter 
+                    paste++; // se avanza al sigte caracter
+                }
+                
+                copy -= pat_len; //como en el while se llega al 0 final, se retrocede el puntero para mover el 0 lo que se movio del string hacia atras
+                *copy = '\0'; // se marca el nuevo final del string original
+                
+                continue;
             }
             
-            copy--;
-            *copy = 0; // se marca el nuevo final del string original
-            
-            continue;
+            aux++; // se mueve el puntero aux del string un espacio
         }
-        
-        *back = backup; // luego de hacer la revision se vuelve a asignar el caracter guardado para no perderlo
-        aux++; // se mueve el puntero aux del string un espacio
-        back++; // tambien se mueve el puntero al caracter que excede el largo de pat
     }
-
 }
 
 //Esta funcion retorna un nuevo string que es str habiendole eliminado el patron pat 
 char *eliminados(char *str, char *pat){
     int pat_len = strlen(pat), pat_count = 0; 
-    char *aux = str, *back = str + pat_len, backup; //se guarda una copia del puntero al string y otro a strlen(pat) espacios mas
+    char *aux = str; //se crea un puntero auxiliar para no perder la referencia al puntero original
 
+    if(strlen(str) == 0){// si el string original esta vacio hay que retornar otro string vacio
+        
+        char *new_string = malloc(1); //se crea una var dinamica para retornar el string
+        *new_string = '\0'; //como esta vacio solo esta el cero del final
+
+        return new_string; // se retorna el string
+    }
+
+    if(pat_len == 0){//si el patron es vacio hay que retornar el mismo string
+        
+        char *new_string = malloc(strlen(str) + 1); //se crea una var dinamica para el string de retorno 
+        strcpy(new_string, str); //se copia el string
+        
+        return new_string; //se retorna el string
+    }
+
+    //while para contar las ocurrencias del patron
     while(strlen(aux) >= strlen(pat)){// mientras aun quepa el patron en lo que resta del string
-        backup = *back; // se guarda el caracter que exece el largo de pat
-        *back = 0; // se reemplaza por cero para marcar el final de un str y poder aplicar strcmp
 
-        if(strcmp(aux,pat) == 0){ // se compara un trozo del string con el patron que se quiere eliminar
+        if(strncmp(aux, pat, pat_len) == 0){ // se compara un trozo del string con el patron que se quiere eliminar
+            
             pat_count++; //si es que se encuentra el patron, se aumenta el contador
-            *back = backup; // se devuelve el caracter guardado
-            aux += pat_len;     // se avanzan los punteros hasta despues del patron
-            back += pat_len;
+
+            aux += pat_len; // se avanzan el puntero aux mas alla del patron
+            
             continue;
         }
-        
-        *back = backup; // luego de hacer la revision se vuelve a asignar el caracter guardado para no perderlo
+
         aux++; // se mueve el puntero aux del string un espacio
-        back++; // tambien se mueve el puntero al caracter que excede el largo de pat
     }
-    char *new_string = malloc(strlen(str) - (pat_len * pat_count) +1); //se crea el nuevo string 
-    char *aux2 = str, *back2 = str + pat_len, *ns_aux = new_string; // se reinician las variables y se crea un puntero aux para new_string
+
+    char *new_string = malloc(strlen(str) - (pat_len * pat_count) + 1); //se asigna una nueva variable dinamica
+    char *aux2 = str, *ns_aux = new_string; // se crean los punteros auxs necesarios
 
     // nuevo while para traspasar la respuesta
-    while(strlen(aux2) >= strlen(pat)){
-        backup = *back2;
-        *back2 = 0;
+    while(*aux2){ //mientras no se termine de recorrer el string original
 
-        if(strcmp(aux2,pat) == 0){
-            *back2 = backup;
-            aux2 += pat_len;
-            back2 += pat_len;
-            continue;
+        if(strncmp(aux2, pat, pat_len) == 0){//si se encuentra una ocurrencia del patron-
+
+            aux2 += pat_len;//-se ignoran estos caracteres avanzando el puntero
+
+            continue; // se pasa la siguiente iteracion
         }
 
-        *back2 = backup;
-        *ns_aux = *aux2;
-        aux2++;
-        back2++;
-        ns_aux++;
+        //si no hay ocurrencia del patron-
+        *ns_aux = *aux2;//-se copia el caracter actual al nuevo string creado
+        aux2++; //se avanza al sigte caracter para revisar
+        ns_aux++; //se avanza al sigte espacio en el string de la respuesta
     }
+     
+    *ns_aux = '\0'; //luego del while el puntero auxiliar del nuevo string apunta a donde deberia ir el cero del final del string
 
     return new_string;
 }
