@@ -6,146 +6,65 @@
 
 //Esta función elimina del string str todas las apariciones del patrón pat
 void eliminar(char *str, char *pat){
-    int pat_len = strlen(pat), str_len = strlen(str);
-    char *aux_str, *aux_pat; //se guarda una copia del puntero al string y otro a strlen(pat) espacios mas
-
-    if(pat_len){ //si el patron es de largo 0 no hay nada que hacer
-        int i = 0; //para el recorrido de str
-
-        while(i < str_len){ //mientras no se haya recorrido todo el string
-            aux_str = str + i; //se define donde apunta el puntero auxiliar esta vuelta
-            aux_pat = pat; //lo mismo para el puntero aux del patron
-
-            if(*aux_str == *aux_pat){ //si se encuentra una primera coicidencia entre el string y el patron-
-                char *copy = aux_str + pat_len, *paste = aux_str; //se declaran los punteros necesarios reubicar hacia atras los caracteres
-                char pattern_found = 1; //condicion de haber encontrado el patron
-  
-                aux_pat++; //-se empieza a buscar en los demas caracteres del patron
-                aux_str++;
-                while(*aux_pat){ //se compara el resto del patron hasta llegar al caracter \0
-                    if(*aux_str != *aux_pat){ //si se encuentra un caracter que no es igual al patro-
-                        pattern_found = 0; //-no se encontro el patron
-                        break; //se rompe el while
-                    } 
-                    aux_str++; //se revisa el proxima caracter del str-
-                    aux_pat++; //-y del patron
-                }
-
-                if(pattern_found){//si es que efectivamente se econtro el patron
-
-                    while(*copy){ //mientras queden caracteres que reubicar
-                        *paste = *copy; //se mueve el caracter para atras
-                        copy++; // se avanza al sigte caracter 
-                        paste++; // se avanza al sigte caracter
+    int pat_len = strlen(pat), steps;
+    char *aux_str = str, *resp = str, *aux_pat = pat;
+    
+    if(pat_len){//si el patron fuera de largo cero no hay nada que hacer
+        while(*aux_str){//mientras se recorra el string
+            steps = 0; //steps contara la cantidad de pasos que dio aux_str que sera util en caso de no encontrar el patron finalmente
+            if(*aux_str == *aux_pat){//se compara el caracter al que se apunta de str con el primero del pat
+                while(*aux_pat){//se compara el resto de pat para ver si es una ocurrencia
+                    if(*aux_str != *aux_pat){//si es que se encuentra un caracter diferente-
+                        break;//por tanto, no es necesario seguir buscando
                     }
-                    
-                    copy -= pat_len; //como en el while se llega al 0 final, se retrocede el puntero para mover el 0 lo que se movio del string hacia atras
-                    *copy = '\0'; // se marca el nuevo final del string original
-
-                    continue; //se avanza a la siguiente vuelta con el i actualizado
+                    aux_pat++;//se avanza a comparar los siguiente caracter
+                    aux_str++;
+                    steps++;
                 }
+
+                aux_pat = pat; //se resetea el puntero aux de pat pues se movio para hacer las comparaciones
+
+                //si el patron fue encontrado, el puntero aux_str quedara apuntando al caracter despues de
+                //la aparicion del patron y sera copiado mas adelante
+
+                if(steps < pat_len){//si el patron no fue encontrado se debe devolver a donde miraba despues de empezar a buscar
+                    aux_str -= steps;
+                }
+
+                *resp = *aux_str; //se copia el caracter debido
+                resp++; //se avanza la respuesta
+                if(*aux_str != '\0'){//si el puntero auxiliar no está ya mirando al final del string
+                    aux_str++;
+                }
+                
             }
-            
-            i++; //se avanza el i para leer el sigte caracter en el string
+
+            else{//si es que no se encuentra una coincidencia de caracteres
+            *resp = *aux_str; //se pone el caracter en donde corresponde
+            resp++; //se avanza la respuesta
+            aux_str++; //se avanza el puntero aux a str
+            }
         }
+        *resp = '\0'; //una vez se termina de revisar, el puntero resp apunta a donde deberia ir el 0 que termina el string
     }
 }
+
 
 //Esta funcion retorna un nuevo string que es str habiendole eliminado el patron pat 
 char *eliminados(char *str, char *pat){
-    int pat_len = strlen(pat), str_len = strlen(str), pat_count = 0; 
-    char *aux_str, *aux_pat; //se crean punteros auxiliares para no perder la referencia al str original y pat original 
+    int str_len = strlen(str); // pat_len = strlen(pat);
 
-    if(str_len == 0){// si el string original esta vacio hay que retornar otro string vacio
-        
-        char *new_string = malloc(1); //se crea una var dinamica para retornar el string
-        *new_string = '\0'; //como esta vacio solo esta el cero del final
+    char* str_copy = malloc(str_len + 1); //hacemos espacio para una copia del string original pues no queremos modificarlo
+    strcpy(str_copy, str); //copiamos str en str_copy
+    eliminar(str_copy, pat); //eliminamos de la copia el patron que se quiere eliminar
 
-        return new_string; // se retorna el string
-    }
+    char* new_string = malloc(strlen(str_copy) + 1);//creamos el nuevo espacio que usara el string a retornar
+    strcpy(new_string, str_copy); //traspasamos el string sin el patron
 
-    if(pat_len == 0){//si el patron es vacio hay que retornar el mismo string
-        
-        char *new_string = malloc(str_len + 1); //se crea una var dinamica para el string de retorno 
-        strcpy(new_string, str); //se copia el string
-        
-        return new_string; //se retorna el string
-    }
+    free(str_copy); //liberamos el espacio pedido para la copia del string original
 
-    int i = 0; //i para iterar en el string
-
-    //while para contar las ocurrencias del patron
-    while(i < str_len){// mientras aun quede string por recorrer
-        aux_str = str + i; //se establecen los punteros auxiliares
-        aux_pat = pat;
-
-
-        if(*aux_str == *aux_pat){ // se busca una primera ocurrencia del patron
-            char pattern_found = 1;
-            aux_str++;//se empieza a buscar desde el proximo caracter respectivo
-            aux_pat++;
-
-            while(*aux_pat){//mientras aun haya caracteres que comparar del patron
-                if(*aux_str != *aux_pat){// si se haya un caracter diferente ya no hay patron
-                    pattern_found = 0;
-                    break;
-                }
-                aux_str++;//se avanzan los respectivos caracteres
-                aux_pat++;
-            }
-
-            if(pattern_found){
-                pat_count++; //si es que se encuentra el patron, se aumenta el contador
-                
-                i += pat_len; //se lleva el i mas alla de la posicion del patron
-
-                continue;
-            }
-        }
-
-        i++; //se avanza el i para leer el proximo caracter
-    }
-
-    char *new_string = malloc(str_len - (pat_len * pat_count) + 1); //se asigna una nueva variable dinamica
-    char *ns_aux = new_string; // se crean los punteros auxs necesarios
-
-
-    i = 0; //se resetea la variable para iterar
-
-    // nuevo while para traspasar la respuesta
-    while(i < str_len){ //mientras no se termine de recorrer el string original
-        aux_str = str + i;//se definen los punteros aux para esta iteracion
-        aux_pat = pat;
-
-
-        if(*aux_str == *aux_pat){//si se encuentra una primera ocurrencia del patron-
-            char pattern_found = 1; //condicion de haber encontrado una ocurrencia del patron
-            aux_str++; //se empieza a buscar a partir de los siguientes caracteres respectivos
-            aux_pat++;
-
-            while(*aux_pat){//mientras quede patron por checkear
-                if(*aux_str != *aux_pat){ //si hay un caracter diferente ya no puede haber patron
-                    pattern_found = 0;
-                    break;
-                }
-                aux_str++; //se avanzan los respectivos punteros
-                aux_pat++;
-            }
-            
-            if(pattern_found){ //si se encontro el patron hay que avanzar el i mas alla del patron para ignorarlo
-                i += pat_len;
-                continue;
-            }
-        }
-
-        //en caso de no haber encontrado un patron se copia el actual caracter a la respuesta
-        *ns_aux = *aux_str;
-        ns_aux++; //se avanza al siguiente caracter a agregar en new_string
-        i++; //y se avanza el i para ver el siguiente caracter en la siguiente iteracion
-
-    }
-     
-    *ns_aux = '\0'; //luego del while el puntero auxiliar del nuevo string apunta a donde deberia ir el cero del final del string
-
-    return new_string;
+    return new_string; //se retorna el nuevo string sin las ocurrencias del patron
 }
+
+
+
