@@ -29,14 +29,10 @@ void eliminar(char *str, char *pat){
 
                 if(steps < pat_len){//si el patron no fue encontrado se debe devolver a donde miraba despues de empezar a buscar
                     aux_str -= steps;
+                    *resp = *aux_str; //se copia el caracter debido
+                    resp++; //se avanza la respuesta
+                    aux_str++; //se avanza el puntero aux
                 }
-
-                *resp = *aux_str; //se copia el caracter debido
-                resp++; //se avanza la respuesta
-                if(*aux_str != '\0'){//si el puntero auxiliar no está ya mirando al final del string
-                    aux_str++;
-                }
-                
             }
 
             else{//si es que no se encuentra una coincidencia de caracteres
@@ -65,6 +61,3 @@ char *eliminados(char *str, char *pat){
 
     return new_string; //se retorna el nuevo string sin las ocurrencias del patron
 }
-
-
-

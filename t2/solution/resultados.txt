@@ -10,13 +10,13 @@ Test de uso de memoria de eliminados
 Benchmark de eliminar
 ---------------------
 Intento= 1
-Tiempo para su version= 63 milisegundos
+Tiempo para su version= 77 milisegundos
 Aprobado
 -----------------------
 Benchmark de eliminados
 -----------------------
 Intento= 1
-Tiempo para su version= 70 milisegundos
+Tiempo para su version= 71 milisegundos
 Felicitaciones!  Aprobo todos los tests.
 ==== run-g ====
 gcc -g -Wall -Werror -std=c18 -Wno-unused-function  test-elim.c elim.c -lm -o elim.bin-g
@@ -28,13 +28,13 @@ Test de uso de memoria de eliminados
 Benchmark de eliminar
 ---------------------
 Intento= 1
-Tiempo para su version= 18 milisegundos
+Tiempo para su version= 19 milisegundos
 Aprobado
 -----------------------
 Benchmark de eliminados
 -----------------------
 Intento= 1
-Tiempo para su version= 20 milisegundos
+Tiempo para su version= 23 milisegundos
 Felicitaciones!  Aprobo todos los tests.
 ==== run ====
 gcc -O -DOPT=1 -Wall -Werror -std=c18 -Wno-unused-function  test-elim.c elim.c -lm -o elim.bin
@@ -42,25 +42,25 @@ Midiendo cuanto demora la solucion del profesor
 rm -f tiempo-ref.txt
 chmod +x prof.ref-x86_64
 ./prof.ref-x86_64 ref > /dev/null
-Tiempos de referencia =  339 769
+Tiempos de referencia =  370 837
 Verificando y comparando con su solucion
-./elim.bin 339 769
+./elim.bin 370 837
 Tests de eliminar
 Tests de eliminados
 Test de uso de memoria de eliminados
 ---------------------
 Benchmark de eliminar
 ---------------------
-Tiempo para la version del profesor= 339 milisegundos
+Tiempo para la version del profesor= 370 milisegundos
 Intento= 1
-Tiempo para su version= 333 milisegundos
-Porcentaje de sobrecosto: -1 %
+Tiempo para su version= 274 milisegundos
+Porcentaje de sobrecosto: -25 %
 Aprobado
 -----------------------
 Benchmark de eliminados
 -----------------------
-Tiempo para la version del profesor= 769 milisegundos
+Tiempo para la version del profesor= 837 milisegundos
 Intento= 1
-Tiempo para su version= 438 milisegundos
-Porcentaje de sobrecosto: -43 %
+Tiempo para su version= 440 milisegundos
+Porcentaje de sobrecosto: -47 %
 Felicitaciones!  Aprobo todos los tests.
