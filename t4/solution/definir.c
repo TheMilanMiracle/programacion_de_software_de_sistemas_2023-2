@@ -7,7 +7,7 @@
 
 //variables globales
 FILE *f; //puntero a un archivo
-const int line_size = 81;// cada linea del archivo tiene 80 caracteres mas un salto de linea
+int line_size;// cada linea del archivo tiene 80 caracteres mas un salto de linea
 int n; //entero que representa el indice de las lineas del archivo diccionario
 
 
@@ -26,6 +26,15 @@ int main(int argc, char *argv[]) {
   if(!f){// si hay algun error con el archivo del diccionario
     perror(argv[1]); //se le muestra el error al usuario
     exit(1); // se sale del programa con codigo 1
+  }
+
+  //para calcular el tamaño de una linea
+  line_size = 1; //se parte desde uno, pues
+  char c[1]; //buffer para los caracteres
+  fread(c, 1, 1, f); //se lee un primer caracter
+  while(c[0] != '\n'){ //mientras no se llegue al salto de linea
+    fread(c, 1, 1, f); //se van leyendo caracteres
+    line_size++;//se aumenta el contador
   }
 
   fseek(f, 0, SEEK_END);//se pone el puntero al archivo en su final
