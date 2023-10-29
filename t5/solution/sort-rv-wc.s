@@ -40,11 +40,64 @@ sort:                   # void sort(uint nums[], int n) { // registros a0, a1
     # en 0(sp), 4(sp), ... o 44(sp)
     # El valor de p esta temporalmente en el registro t0
     # No puede hacer mas trabajo que la comparacion (no puede usar ret)
-    lw      a0,0(t0)    #     int rc= strcmp(p[0], p[1]); // registro t1
-    lw      a1,4(t0)
-    call    strcmp      #     // valor retornado queda en registro a0
-                        #     // p ya no esta en el registro t0
-    mv      t1,a0       #     // Dejar resultado de la comparacion en t1
+    # se debe dejar el resultado de la comparacion en t1
+    #0(t0) = p[0]
+    #4(t0) = p[1]
+    
+.count1:
+    lw      a1,0(t0)                    # a1 = p[0]
+    lbu     a0,0(a1)                    # a0 = a1[0]
+    beq     a0,zero,.count1_zero        # if a0 == 0  ->  .count1_zero
+    li      t1,0                        # t1 = 0 (count1)
+    li      a2,32                       # a2 = ' ' (back1)
+    li      a3,32                       # a3 = ' '
+    j       .count_while_cond1          # ->  .count_whilde_cond1
+
+.count_while1:
+    beq     a0,a3,.past_if1             # if a0 == ' '  ->  .past_if1
+    bne     a2,a3,.past_if1             # if a2 != ' '  ->  .pasr_if1
+    addi    t1,t1,1                     # t1++
+.past_if1:
+    mv      a2,a0                       # a2 = a0
+    addi    a1,a1,1                     # a1++
+    lbu     a0,0(a1)                    # a0 = a1[0]
+
+.count_while_cond1:
+    beq     a0,zero,.count2             # if a0 == 0  ->  .count2
+    j       .count_while1               # ->  .count_while1
+
+.count1_zero:
+    li      t1,0                        # t1 = 0
+    j       .count2                     # ->  .count2
+
+.count2:
+    lw      a1,4(t0)                    # a1 = p[1] 
+    lbu     a0,0(a1)                    # a0 = a1[0]
+    beq     a0,zero,.count2_zero        # if a0 == 0  ->  .count2_zero
+    li      t2,0                        # t2 = 0
+    li      a2,32                       # a2 = ' ' (back2)
+    j       .count_while_cond2          # .count_while_cond2
+
+.count_while2:
+    beq     a0,a3,.past_if2             # if a0 == ' '  ->  .past_if2
+    bne     a2,a3,.past_if2             # if a2 != ' '  ->  .pasr_if2
+    addi    t2,t2,1                     # t2++
+.past_if2:
+    mv      a2,a0                       # a2 = a0
+    addi    a1,a1,1                     # a1++
+    lbu     a0,0(a1)                    # a0 = a1[0]
+
+.count_while_cond2:
+    beq     a0,zero,.out                # if a0 == 0  ->  .out
+    j       .count_while2               # ->  .count_while2
+
+.count2_zero:
+    li      t2,0                        # t2 = 0
+    j       .out                        # ->  .out
+
+.out:
+    sub     t1,t1,t2                    # t1 = t1-t2
+
 
     # En el registro t1 debe quedar la conclusion de la comparacion:
     # si t1<=0 p[0] y p[1] estan en orden y no se intercambiaran.

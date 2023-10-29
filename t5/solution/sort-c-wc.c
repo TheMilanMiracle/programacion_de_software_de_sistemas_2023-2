@@ -1,4 +1,19 @@
 #include <string.h>
+int countWords(char *str){
+  char *aux = str;
+  int count = 0;
+
+  char back = ' ';
+  while(*aux){
+    if(*aux != ' ' && back == ' '){
+      count++;
+    }
+    back = *aux;
+    aux++;
+  }
+
+  return count;
+}
 
 int strCmp(char *s1, char *s2) {
     char c1;
@@ -24,17 +39,21 @@ int strCmp(char *s1, char *s2) {
 void sort(char **a, int n) {
   char **ult= &a[n-1];
   char **p= a;
-  while (p<ult) {
 
-    int t1= strCmp(p[0], p[1]);
+  while(p < ult){ //ordenar por palabras
+    int t1 = countWords(p[0]); //cantidad de palabras de la actual palabra
+    int t2 = countWords(p[1]); //cantidad de palabras de la siguiente palabra
 
-    if (t1 <= 0)
+    if(t1 > t2){
+      char *tmp = p[0];
+
+      p[0] = p[1];
+      p[1] = tmp;
+
+      p = a;
+    }
+    else{
       p++;
-    else {
-      char *tmp= p[0];
-      p[0]= p[1];
-      p[1]= tmp;
-      p= a;
     }
   }
 }
