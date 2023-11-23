@@ -57,8 +57,8 @@ double viajante_par(int z[], int n, double **m, int nperm, int p) {
     int x[n+1]; // buffer para leer el camino del pipe
     double child_min; // buffer para leer el minimo del pipe
 
-    read(fds[i][0], &child_min, sizeof(double)); // leemos el minimo 
-    read(fds[i][0], &x, (n+1)*sizeof(int)); // leemeos el arreglo con el camino
+    leer(fds[i][0], &child_min, sizeof(double)); // leemos el minimo 
+    leer(fds[i][0], &x, (n+1)*sizeof(int)); // leemeos el arreglo con el camino
     close(fds[i][0]); // cerramos el canal de lectura para evitar "goteras"
 
     waitpid(pids[i], NULL, 0); // enterramos el hijo para evitar procesos _zombies_
